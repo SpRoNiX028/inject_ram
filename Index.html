@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InjectRAM™ — One Shot of RAM and You're Flying ⚡</title>
+    <meta name="description" content="Inject RAM directly into your PC or phone. No cables. No screwdrivers. Just one shot and your device is boosted. Totally real.*">
+    <meta property="og:title" content="InjectRAM™ — One Shot of RAM and You're Flying ⚡">
+    <meta property="og:description" content="Inject RAM directly into your device via WiFi. Trusted by 12 million users who definitely exist.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💉</text></svg>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Manrope', sans-serif; }
+        ::selection { background: #64906E; color: white; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); filter: blur(3px); }
+            to { opacity: 1; transform: translateY(0); filter: blur(0); }
+        }
+        .animate-in { animation: fadeInUp 0.8s cubic-bezier(0.2,0.8,0.2,1) forwards; opacity: 0; }
+        .delay-1 { animation-delay: 100ms; }
+        .delay-2 { animation-delay: 200ms; }
+        .delay-3 { animation-delay: 300ms; }
+        .delay-4 { animation-delay: 400ms; }
+        .delay-5 { animation-delay: 500ms; }
+        .delay-6 { animation-delay: 600ms; }
+        .delay-7 { animation-delay: 700ms; }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(100,144,110,0.2); }
+            50% { box-shadow: 0 0 40px rgba(100,144,110,0.4); }
+        }
+        .glow-pulse { animation: pulse-glow 3s ease-in-out infinite; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .float { animation: float 4s ease-in-out infinite; }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .spin-slow { animation: spin-slow 8s linear infinite; }
+
+        .card-hover { transition: all 600ms cubic-bezier(0.2,0.8,0.2,1); }
+        .card-hover:hover { transform: translateY(-6px); box-shadow: 0 40px 80px -20px rgba(0,0,0,0.12), 0 0 0 1px rgba(100,144,110,0.15); }
+
+        .bokeh { position: absolute; border-radius: 50%; filter: blur(80px); pointer-events: none; }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        .marquee { animation: marquee 30s linear infinite; }
+
+        .glass {
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.7), rgba(255,255,255,0.4), rgba(255,255,255,0.2));
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+        }
+
+        .noise-bg {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+            mix-blend-mode: overlay;
+        }
+
+        @keyframes inject-pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.15); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .inject-pulse { animation: inject-pulse 2s ease-in-out infinite; }
+
+        @keyframes shimmer {
+            0% { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .shimmer-text {
+            background: linear-gradient(90deg, #64906E, #4a6e50, #64906E, #244B29, #64906E);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 4s linear infinite;
+        }
+
+        .popular-badge {
+            background: linear-gradient(135deg, #64906E, #4a6e50);
+        }
+
+        @keyframes syringe-push {
+            0% { transform: translateX(0); }
+            40% { transform: translateX(8px); }
+            100% { transform: translateX(0); }
+        }
+        .syringe-anim { animation: syringe-push 1.5s ease-in-out infinite; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F4F4F5; }
+        ::-webkit-scrollbar-thumb { background: #64906E; border-radius: 999px; }
+    </style>
+</head>
+<body class="bg-[#F4F4F5] text-[#171717] overflow-x-hidden">
+    <div class="noise-bg"></div>
+
+    <div class="bokeh w-96 h-96 bg-[rgba(100,144,110,0.15)] top-[-10%] left-[-5%] fixed"></div>
+    <div class="bokeh w-80 h-80 bg-[rgba(164,180,148,0.12)] top-[30%] right-[-8%] fixed"></div>
+    <div class="bokeh w-72 h-72 bg-[rgba(100,144,110,0.1)] bottom-[10%] left-[20%] fixed"></div>
+
+    <!-- Nav -->
+    <nav class="relative z-50 py-5 px-6 md:px-8">
+        <div class="max-w-[1500px] mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-lg bg-[#64906E] flex items-center justify-center">
+                    <i data-lucide="syringe" class="w-5 h-5 text-white"></i>
+                </div>
+                <span class="font-bold text-xl tracking-tight">InjectRAM<span class="text-[#64906E]">™</span></span>
+            </div>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium text-[#525252]">
+                <a href="#how" class="hover:text-[#64906E] transition-colors">Injection</a>
+                <a href="#plans" class="hover:text-[#64906E] transition-colors">Pricing</a>
+                <a href="#testimonials" class="hover:text-[#64906E] transition-colors">Reviews</a>
+                <a href="#faq" class="hover:text-[#64906E] transition-colors">FAQ</a>
+            </div>
+            <button onclick="showDownloadModal()" class="bg-[#0f172a] hover:bg-[#020617] text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-all duration-300 hover:scale-[1.03] shadow-lg flex items-center gap-2">
+                <i data-lucide="syringe" class="w-4 h-4"></i>
+                Inject Now
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="relative z-10 px-6 md:px-8 pt-10 pb-24">
+        <div class="max-w-[1500px] mx-auto text-center">
+            <div class="animate-in delay-1">
+                <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/70 border border-[rgba(0,0,0,0.06)] text-xs font-bold tracking-wide text-[#64906E] mb-8 backdrop-blur-sm">
+                    <span class="inline-block w-2 h-2 rounded-full bg-[#64906E] animate-pulse"></span>
+                    OVER 12 BILLION GB INJECTED
+                </div>
+            </div>
+
+            <h1 class="animate-in delay-2 text-5xl md:text-7xl lg:text-[5.5rem] font-medium tracking-[-0.05em] leading-[0.95] mb-4">
+                One shot of RAM<br>
+                <span class="shimmer-text">and you're flying</span> ⚡
+            </h1>
+
+            <p class="animate-in delay-3 text-lg md:text-xl text-[#404040] max-w-2xl mx-auto mb-4 leading-relaxed">
+                InjectRAM™ sends memory <strong>straight into the veins</strong> of your PC or phone. No cables. No screwdrivers. Just one injection over WiFi.
+            </p>
+
+            <p class="animate-in delay-4 text-sm text-[#64906E] font-semibold tracking-wide mb-10">
+                💉 RAM, DIRECTLY INTO THE HEART OF YOUR CPU
+            </p>
+
+            <div class="animate-in delay-5 flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+                <button onclick="showDownloadModal()" class="group bg-[#0f172a] hover:bg-[#020617] text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.03] shadow-xl shadow-black/10 flex items-center gap-3 text-base">
+                    <span class="syringe-anim inline-block"><i data-lucide="syringe" class="w-5 h-5"></i></span>
+                    Inject 8 GB Free
+                </button>
+                <a href="#how" class="flex items-center gap-2 text-[#525252] hover:text-[#64906E] font-medium transition-colors">
+                    <i data-lucide="play-circle" class="w-5 h-5"></i>
+                    Watch live injection
+                </a>
+            </div>
+
+            <!-- Device mockups -->
+            <div class="animate-in delay-6 flex justify-center items-end gap-4 md:gap-8 mb-12">
+                <!-- Phone -->
+                <div class="w-32 md:w-40 bg-[#0f172a] rounded-[1.5rem] p-2 shadow-2xl relative float" style="animation-delay: 0.5s;">
+                    <div class="bg-[#1a1a2e] rounded-[1.2rem] h-52 md:h-64 flex flex-col items-center justify-center text-white overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-b from-[#64906E]/20 to-transparent"></div>
+                        <i data-lucide="smartphone" class="w-8 h-8 text-white/30 mb-2"></i>
+                        <div class="text-xs font-bold text-[#64906E] relative z-10">8 GB injected</div>
+                        <div class="w-12 h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden">
+                            <div class="h-full bg-[#64906E] rounded-full w-3/4"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop -->
+                <div class="w-48 md:w-64 relative">
+                    <div class="bg-[#0f172a] rounded-2xl p-2 shadow-2xl">
+                        <div class="bg-[#1a1a2e] rounded-xl h-36 md:h-44 flex flex-col items-center justify-center text-white overflow-hidden relative">
+                            <div class="absolute inset-0 bg-gradient-to-b from-[#64906E]/20 to-transparent"></div>
+                            <i data-lucide="monitor" class="w-10 h-10 text-white/30 mb-2"></i>
+                            <div class="text-sm font-bold text-[#64906E] relative z-10">32 GB injected</div>
+                            <div class="w-20 h-2 bg-white/10 rounded-full mt-2 overflow-hidden">
+                                <div class="h-full bg-[#64906E] rounded-full w-full"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-20 h-3 bg-[#0f172a] mx-auto rounded-b-lg"></div>
+                    <div class="w-32 h-1.5 bg-[#0f172a] mx-auto rounded-full"></div>
+                </div>
+
+                <!-- Tablet -->
+                <div class="w-36 md:w-44 bg-[#0f172a] rounded-[1.5rem] p-2 shadow-2xl relative float" style="animation-delay: 1s;">
+                    <div class="bg-[#1a1a2e] rounded-[1.2rem] h-44 md:h-56 flex flex-col items-center justify-center text-white overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-b from-[#64906E]/20 to-transparent"></div>
+                        <i data-lucide="tablet" class="w-8 h-8 text-white/30 mb-2"></i>
+                        <div class="text-xs font-bold text-[#64906E] relative z-10">16 GB injected</div>
+                        <div class="w-14 h-1.5 bg-white/10 rounded-full mt-2 overflow-hidden">
+                            <div class="h-full bg-[#64906E] rounded-full w-5/6"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="animate-in delay-7 grid grid-cols-3 gap-6 max-w-lg mx-auto">
+                <div>
+                    <div class="text-2xl md:text-3xl font-bold tracking-tight">12M+</div>
+                    <div class="text-xs text-[#525252] mt-1">Devices injected</div>
+                </div>
+                <div>
+                    <div class="text-2xl md:text-3xl font-bold tracking-tight">0.3ms</div>
+                    <div class="text-xs text-[#525252] mt-1">Injection time</div>
+                </div>
+                <div>
+                    <div class="text-2xl md:text-3xl font-bold tracking-tight">100%</div>
+                    <div class="text-xs text-[#525252] mt-1">Survival rate</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee -->
+    <div class="relative z-10 overflow-hidden py-4 border-y border-[rgba(0,0,0,0.06)] bg-white/50 backdrop-blur-sm">
+        <div class="marquee flex gap-12 whitespace-nowrap">
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> Needle-free injection</span>
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> Works on PC, Mac, Phone, Smart Fridge</span>
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> 0% risk of digital infection</span>
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> Certified by absolutely no lab</span>
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> Visible results in 0.2 seconds</span>
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> Needle-free injection</span>
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> Works on PC, Mac, Phone, Smart Fridge</span>
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> 0% risk of digital infection</span>
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> Certified by absolutely no lab</span>
+            <span class="text-sm font-medium text-[#525252] flex items-center gap-2"><i data-lucide="check-circle" class="w-4 h-4 text-[#64906E]"></i> Visible results in 0.2 seconds</span>
+        </div>
+    </div>
+
+    <!-- How it works -->
+    <section id="how" class="relative z-10 px-6 md:px-8 py-24">
+        <div class="max-w-[1500px] mx-auto">
+            <div class="text-center mb-16">
+                <span class="inline-block text-xs font-bold tracking-[0.2em] uppercase text-[#64906E] mb-4">Injection Protocol</span>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-[-0.025em]">How RAM enters your device</h2>
+                <p class="text-[#525252] mt-4 max-w-xl mx-auto">Our patented 3-step protocol. Painless, fast, and completely real.*</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="card-hover bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-3xl p-8 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 text-6xl font-black text-[#64906E]/10">01</div>
+                    <div class="w-14 h-14 rounded-2xl bg-[#64906E]/10 flex items-center justify-center mb-6">
+                        <i data-lucide="scan-line" class="w-7 h-7 text-[#64906E]"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 tracking-tight">Scan your device</h3>
+                    <p class="text-[#525252] leading-relaxed">InjectRAM™ detects the digital veins of your PC or phone and prepares the optimal RAM dosage. It's like a blood test, but over WiFi.</p>
+                    <div class="mt-6 flex items-center gap-2 text-xs text-[#64906E] font-medium">
+                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                        Compatible with over 0 devices
+                    </div>
+                </div>
+
+                <div class="card-hover bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-3xl p-8 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 text-6xl font-black text-[#64906E]/10">02</div>
+                    <div class="w-14 h-14 rounded-2xl bg-[#64906E]/10 flex items-center justify-center mb-6 inject-pulse">
+                        <i data-lucide="syringe" class="w-7 h-7 text-[#64906E]"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 tracking-tight">Inject the RAM</h3>
+                    <p class="text-[#525252] leading-relaxed">One click and RAM is injected straight into your CPU's heart via electromagnetic waves. You might feel a slight warmth. That's normal — it's the RAM spreading through your system.</p>
+                    <div class="mt-6 flex items-center gap-2 text-xs text-[#64906E] font-medium">
+                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                        Painless in 100% of cases*
+                    </div>
+                </div>
+
+                <div class="card-hover bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-3xl p-8 relative overflow-hidden">
+                    <div class="absolute top-4 right-4 text-6xl font-black text-[#64906E]/10">03</div>
+                    <div class="w-14 h-14 rounded-2xl bg-[#64906E]/10 flex items-center justify-center mb-6">
+                        <i data-lucide="rocket" class="w-7 h-7 text-[#64906E]"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-3 tracking-tight">Feel the power</h3>
+                    <p class="text-[#525252] leading-relaxed">In 0.3ms, your device goes from 4 GB to 64 GB of RAM. Your fans spin up. Your screen glows brighter. You are a god.</p>
+                    <div class="mt-6 flex items-center gap-2 text-xs text-[#64906E] font-medium">
+                        <i data-lucide="info" class="w-3.5 h-3.5"></i>
+                        Rare side effect: oversized ego
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="relative z-10 px-6 md:px-8 py-16">
+        <div class="max-w-[1500px] mx-auto">
+            <div class="grid md:grid-cols-2 gap-6">
+
+                <div class="card-hover glass border border-[rgba(0,0,0,0.06)] rounded-3xl p-8 md:p-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-[#64906E]/10 flex items-center justify-center">
+                            <i data-lucide="heart-pulse" class="w-5 h-5 text-[#64906E]"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold tracking-tight">RAM Heart Monitor</h3>
+                    </div>
+                    <p class="text-[#525252] leading-relaxed mb-6">Monitor your RAM's pulse in real time. If the digital heartbeat drops, a booster injection is automatically triggered.</p>
+                    <div class="bg-[#F4F4F5] rounded-2xl p-5">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-sm text-[#525252]">RAM Pulse</span>
+                            <span class="text-sm font-bold text-[#64906E]">144 BPM 💚</span>
+                        </div>
+                        <svg viewBox="0 0 400 60" class="w-full h-12">
+                            <polyline fill="none" stroke="#64906E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                points="0,30 40,30 60,30 70,10 80,50 90,20 100,40 110,30 150,30 190,30 210,30 220,8 230,52 240,18 250,42 260,30 300,30 340,30 360,30 370,12 380,48 390,22 400,30" />
+                        </svg>
+                        <div class="flex justify-between text-[10px] text-[#525252] mt-1">
+                            <span>30s ago</span>
+                            <span>Now</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-hover glass border border-[rgba(0,0,0,0.06)] rounded-3xl p-8 md:p-10">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-[#64906E]/10 flex items-center justify-center">
+                            <i data-lucide="shield-check" class="w-5 h-5 text-[#64906E]"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold tracking-tight">Anti-Rejection™</h3>
+                    </div>
+                    <p class="text-[#525252] leading-relaxed mb-6">Our algorithm prevents your device from rejecting the injected RAM. Works with all operating systems — even ones that don't exist yet.</p>
+                    <div class="bg-[#F4F4F5] rounded-2xl p-5">
+                        <div class="space-y-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-[#525252] flex items-center gap-2"><i data-lucide="monitor" class="w-4 h-4"></i> Windows</span>
+                                <span class="text-xs font-bold text-[#64906E] bg-[#64906E]/10 px-2 py-0.5 rounded-full">Compatible ✓</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-[#525252] flex items-center gap-2"><i data-lucide="laptop" class="w-4 h-4"></i> macOS</span>
+                                <span class="text-xs font-bold text-[#64906E] bg-[#64906E]/10 px-2 py-0.5 rounded-full">Compatible ✓</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-[#525252] flex items-center gap-2"><i data-lucide="smartphone" class="w-4 h-4"></i> iOS / Android</span>
+                                <span class="text-xs font-bold text-[#64906E] bg-[#64906E]/10 px-2 py-0.5 rounded-full">Compatible ✓</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-[#525252] flex items-center gap-2"><i data-lucide="refrigerator" class="w-4 h-4"></i> Smart Fridge</span>
+                                <span class="text-xs font-bold text-yellow-600 bg-yellow-50 px-2 py-0.5 rounded-full">Beta</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section id="plans" class="relative z-10 px-6 md:px-8 py-24">
+        <div class="max-w-[1500px] mx-auto">
+            <div class="text-center mb-16">
+                <span class="inline-block text-xs font-bold tracking-[0.2em] uppercase text-[#64906E] mb-4">Dosages</span>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-[-0.025em]">Pick your dosage</h2>
+                <p class="text-[#525252] mt-4 max-w-xl mx-auto">Like any treatment, start small. Or go straight to overdose. We don't judge.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
+                <!-- Light -->
+                <div class="card-hover bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-3xl p-7 flex flex-col">
+                    <div class="mb-6">
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-3 h-3 rounded-full bg-gray-300"></div>
+                            <h3 class="text-lg font-semibold tracking-tight">Light</h3>
+                        </div>
+                        <p class="text-sm text-[#525252] mt-1">First injection</p>
+                    </div>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold tracking-tight">$0</span>
+                        <span class="text-[#525252] text-sm">/month</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-1">
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            8 GB injected / month
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            WiFi 2.4 GHz injection
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            1 injection per week
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            Carrier pigeon support
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252] line-through opacity-50">
+                            <i data-lucide="x" class="w-4 h-4 text-gray-400 mt-0.5 shrink-0"></i>
+                            Anti-Rejection™
+                        </li>
+                    </ul>
+                    <button onclick="selectPlan('Light')" class="w-full py-3 rounded-xl border-2 border-[#0f172a] text-[#0f172a] font-semibold text-sm hover:bg-[#0f172a] hover:text-white transition-all duration-300">
+                        First injection
+                    </button>
+                </div>
+
+                <!-- Regular -->
+                <div class="card-hover bg-white/80 border-2 border-[#64906E]/30 rounded-3xl p-7 flex flex-col relative glow-pulse">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+                        <span class="popular-badge text-white text-xs font-bold px-4 py-1.5 rounded-full tracking-wide">POPULAR</span>
+                    </div>
+                    <div class="mb-6">
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-3 h-3 rounded-full bg-[#64906E]"></div>
+                            <h3 class="text-lg font-semibold tracking-tight">Regular</h3>
+                        </div>
+                        <p class="text-sm text-[#525252] mt-1">Standard treatment</p>
+                    </div>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold tracking-tight">$9.99</span>
+                        <span class="text-[#525252] text-sm">/month</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-1">
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            32 GB injected / month
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            WiFi 6 injection
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            Unlimited injections
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            Anti-Rejection™ included
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            Email support (48h)
+                        </li>
+                    </ul>
+                    <button onclick="selectPlan('Regular')" class="w-full py-3 rounded-xl bg-[#0f172a] hover:bg-[#020617] text-white font-semibold text-sm transition-all duration-300 hover:scale-[1.02] shadow-lg">
+                        Get Regular 💉
+                    </button>
+                </div>
+
+                <!-- Overdose -->
+                <div class="card-hover bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-3xl p-7 flex flex-col">
+                    <div class="mb-6">
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-3 h-3 rounded-full bg-purple-500"></div>
+                            <h3 class="text-lg font-semibold tracking-tight">Overdose</h3>
+                        </div>
+                        <p class="text-sm text-[#525252] mt-1">Heavy duty</p>
+                    </div>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold tracking-tight">$49.99</span>
+                        <span class="text-[#525252] text-sm">/month</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-1">
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            128 GB injected / month
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            Fiber optic injection
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            Anti-Rejection™ + FPS Boost
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            24/7 phone support
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-[#525252]">
+                            <i data-lucide="check" class="w-4 h-4 text-[#64906E] mt-0.5 shrink-0"></i>
+                            Digital prescription included
+                        </li>
+                    </ul>
+                    <button onclick="selectPlan('Overdose')" class="w-full py-3 rounded-xl border-2 border-[#0f172a] text-[#0f172a] font-semibold text-sm hover:bg-[#0f172a] hover:text-white transition-all duration-300">
+                        Go Overdose 💀
+                    </button>
+                </div>
+
+                <!-- Létal -->
+                <div class="card-hover bg-[#0f172a] border border-[rgba(255,255,255,0.1)] rounded-3xl p-7 flex flex-col text-white">
+                    <div class="mb-6">
+                        <div class="flex items-center gap-2 mb-1">
+                            <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                            <h3 class="text-lg font-semibold tracking-tight flex items-center gap-2">
+                                Lethal
+                                <span class="text-[10px] bg-gradient-to-r from-yellow-400 to-red-500 text-black px-2 py-0.5 rounded-full font-bold">☠️ MAX</span>
+                            </h3>
+                        </div>
+                        <p class="text-sm text-gray-400 mt-1">Beyond human limits</p>
+                    </div>
+                    <div class="mb-6">
+                        <span class="text-4xl font-bold tracking-tight">$199.99</span>
+                        <span class="text-gray-400 text-sm">/month</span>
+                    </div>
+                    <ul class="space-y-3 mb-8 flex-1">
+                        <li class="flex items-start gap-2.5 text-sm text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-400 mt-0.5 shrink-0"></i>
+                            1 TB quantum RAM / month
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-400 mt-0.5 shrink-0"></i>
+                            Fiber optic + 5G injection
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-400 mt-0.5 shrink-0"></i>
+                            Auto cloud overclocking
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-400 mt-0.5 shrink-0"></i>
+                            RGB RAM (glows in the dark)
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-400 mt-0.5 shrink-0"></i>
+                            Dedicated IT doctor
+                        </li>
+                        <li class="flex items-start gap-2.5 text-sm text-gray-300">
+                            <i data-lucide="check" class="w-4 h-4 text-yellow-400 mt-0.5 shrink-0"></i>
+                            GPU injection coming soon
+                        </li>
+                    </ul>
+                    <button onclick="selectPlan('Lethal')" class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-400 to-red-500 text-black font-bold text-sm transition-all duration-300 hover:scale-[1.02] shadow-lg">
+                        Go Lethal ☠️
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-center text-xs text-[#525252] mt-8">
+                * No refunds possible. Injected RAM fuses with your motherboard. In case of overdose, unplug your router and consult a technician.
+            </p>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section id="testimonials" class="relative z-10 px-6 md:px-8 py-24 bg-white/40">
+        <div class="max-w-[1500px] mx-auto">
+            <div class="text-center mb-16">
+                <span class="inline-block text-xs font-bold tracking-[0.2em] uppercase text-[#64906E] mb-4">Reviews</span>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-[-0.025em]">They tried the injection</h2>
+                <p class="text-[#525252] mt-4">100% authentic reviews, certified by our imaginary lab.</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <div class="card-hover bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-3xl p-7">
+                    <div class="flex items-center gap-1 mb-4">
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                    </div>
+                    <p class="text-[#525252] leading-relaxed mb-6">"I injected 32 GB into my phone and it got so fast it texted my ex before I could cancel. Still giving it 5 stars."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-[#64906E]/20 flex items-center justify-center text-[#64906E] font-bold text-sm">CB</div>
+                        <div>
+                            <div class="font-semibold text-sm">Clara B.</div>
+                            <div class="text-xs text-[#525252]">Tech influencer (2 followers)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-hover bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-3xl p-7">
+                    <div class="flex items-center gap-1 mb-4">
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                    </div>
+                    <p class="text-[#525252] leading-relaxed mb-6">"My PC had 4 GB of RAM. After the injection, it had 64. My cat walked on the keyboard during the injection and now the cat also has 8 GB of RAM. Magical product."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-[#64906E]/20 flex items-center justify-center text-[#64906E] font-bold text-sm">JD</div>
+                        <div>
+                            <div class="font-semibold text-sm">Jake D.</div>
+                            <div class="text-xs text-[#525252]">Professional gamer (in bed)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-hover bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-3xl p-7">
+                    <div class="flex items-center gap-1 mb-4">
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-yellow-400 text-yellow-400"></i>
+                        <i data-lucide="star" class="w-4 h-4 text-yellow-400"></i>
+                    </div>
+                    <p class="text-[#525252] leading-relaxed mb-6">"4 stars because the injection made me sneeze. Otherwise I injected 128 GB into my smart fridge and it freezes things 2x faster. Highly recommend."</p>
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-[#64906E]/20 flex items-center justify-center text-[#64906E] font-bold text-sm">MR</div>
+                        <div>
+                            <div class="font-semibold text-sm">Mike R.</div>
+                            <div class="text-xs text-[#525252]">Retired, smart fridge pioneer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="relative z-10 px-6 md:px-8 py-24">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-16">
+                <span class="inline-block text-xs font-bold tracking-[0.2em] uppercase text-[#64906E] mb-4">FAQ</span>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-[-0.025em]">Frequently Asked Questions</h2>
+                <p class="text-[#525252] mt-4">The only reliable answers on the internet. Probably.</p>
+            </div>
+
+            <div class="space-y-3" id="faq-list">
+                <div class="faq-item bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-2xl overflow-hidden">
+                    <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-6 text-left">
+                        <span class="font-semibold text-sm pr-4">Does the injection hurt my PC?</span>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#525252] shrink-0 faq-icon transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-sm text-[#525252] leading-relaxed">No, the injection is completely painless. Your PC may feel a slight warmth around the CPU during injection — that's just the RAM spreading through its digital veins. If your PC starts crying, consult a technician.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-2xl overflow-hidden">
+                    <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-6 text-left">
+                        <span class="font-semibold text-sm pr-4">How does RAM physically enter my phone?</span>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#525252] shrink-0 faq-icon transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-sm text-[#525252] leading-relaxed">Our RamOsmosis™ technology allows RAM to pass through your phone screen via digital osmosis. The RAM molecules are small enough to slip between the pixels. It's nanotechnology. Don't ask for details — we have a patent.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-2xl overflow-hidden">
+                    <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-6 text-left">
+                        <span class="font-semibold text-sm pr-4">Can you overdose on RAM?</span>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#525252] shrink-0 faq-icon transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-sm text-[#525252] leading-relaxed">Theoretically no, but we advise against exceeding 512 GB on an unventilated device. Side effects may include: screen too bright, fans singing, and a feeling of omnipotence. In case of overdose, hold the power button for 10 seconds.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-2xl overflow-hidden">
+                    <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-6 text-left">
+                        <span class="font-semibold text-sm pr-4">Is injected RAM compatible with my cat?</span>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#525252] shrink-0 faq-icon transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-sm text-[#525252] leading-relaxed">Yes, if your cat walks on your keyboard during injection, it will receive a dosage proportional to its weight. Multiple users report their cat becoming noticeably faster after an accidental injection. We're not vets, but the results speak for themselves.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-2xl overflow-hidden">
+                    <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-6 text-left">
+                        <span class="font-semibold text-sm pr-4">Does the RAM evaporate if I turn off my WiFi?</span>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#525252] shrink-0 faq-icon transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-sm text-[#525252] leading-relaxed">Injected RAM has a half-life of 4 to 6 hours without WiFi. After that, it evaporates through the USB ports. To maintain your dosage, leave your WiFi on overnight. Your neighbor can also give you a booster injection if you're on the same network.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item bg-white/80 border border-[rgba(0,0,0,0.06)] rounded-2xl overflow-hidden">
+                    <button onclick="toggleFaq(this)" class="w-full flex items-center justify-between p-6 text-left">
+                        <span class="font-semibold text-sm pr-4">Can I inject RAM into my game console?</span>
+                        <i data-lucide="chevron-down" class="w-5 h-5 text-[#525252] shrink-0 faq-icon transition-transform duration-300"></i>
+                    </button>
+                    <div class="faq-content hidden px-6 pb-6">
+                        <p class="text-sm text-[#525252] leading-relaxed">Yes! InjectRAM™ works on PS5, Xbox Series X, and Nintendo Switch. Warning on Switch: injecting more than 4 GB may cause the console to swell. That's normal — RAM needs room. The Game Boy Advance is also supported in Legacy mode.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="relative z-10 px-6 md:px-8 py-24">
+        <div class="max-w-[1500px] mx-auto">
+            <div class="bg-[#0f172a] rounded-3xl p-10 md:p-16 text-center text-white relative overflow-hidden">
+                <div class="absolute inset-0 opacity-10">
+                    <div class="absolute top-10 left-10 w-40 h-40 rounded-full bg-[#64906E] blur-3xl"></div>
+                    <div class="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-[#64906E] blur-3xl"></div>
+                    <div class="absolute top-1/2 left-1/2 w-32 h-32 rounded-full bg-yellow-400 blur-3xl"></div>
+                </div>
+                <div class="relative z-10">
+                    <div class="text-5xl mb-6">💉</div>
+                    <h2 class="text-3xl md:text-5xl font-semibold tracking-[-0.025em] mb-4">Ready for your first shot?</h2>
+                    <p class="text-gray-400 max-w-xl mx-auto mb-2 text-lg">Join 12 million users. Their devices have never been faster.</p>
+                    <p class="text-[#64906E] font-semibold text-sm mb-8">One shot of RAM and you're flying ⚡</p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button onclick="showDownloadModal()" class="group bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-bold px-8 py-4 rounded-2xl transition-all duration-300 hover:scale-[1.03] shadow-lg flex items-center gap-2 justify-center">
+                            <span class="syringe-anim inline-block"><i data-lucide="syringe" class="w-5 h-5"></i></span>
+                            Inject Now
+                        </button>
+                        <button onclick="document.getElementById('plans').scrollIntoView({behavior:'smooth'})" class="bg-white/10 hover:bg-white/20 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 border border-white/10">
+                            See dosages
+                        </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-6">🔒 Secure injection powered by RAM-256 encryption</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="relative z-10 px-6 md:px-8 py-12 border-t border-[rgba(0,0,0,0.06)]">
+        <div class="max-w-[1500px] mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-[#64906E] flex items-center justify-center">
+                        <i data-lucide="syringe" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <span class="font-bold tracking-tight">InjectRAM<span class="text-[#64906E]">™</span></span>
+                </div>
+                <div class="flex items-center gap-6 text-sm text-[#525252]">
+                    <a href="#" class="hover:text-[#64906E] transition-colors">Legal</a>
+                    <a href="#" class="hover:text-[#64906E] transition-colors">Terms</a>
+                    <a href="#" class="hover:text-[#64906E] transition-colors">Injection Policy</a>
+                    <a href="#" class="hover:text-[#64906E] transition-colors">Side Effects</a>
+                </div>
+                <p class="text-xs text-[#525252]">© 2025 InjectRAM™ — No RAM was actually injected</p>
+            </div>
+            <div class="mt-6 text-center">
+                <p class="text-[10px] text-[#525252]/60 max-w-2xl mx-auto">This site is a joke. It is technically impossible to download or inject RAM. If you believed this was real, no judgment, but maybe go outside. 💚</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal -->
+    <div id="download-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-6" style="background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative" id="modal-content">
+            <button onclick="closeDownloadModal()" class="absolute top-4 right-4 text-[#525252] hover:text-[#171717] transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div id="modal-step-1">
+                <div class="w-16 h-16 rounded-2xl bg-[#64906E]/10 flex items-center justify-center mb-6 mx-auto inject-pulse">
+                    <i data-lucide="syringe" class="w-8 h-8 text-[#64906E]"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-center mb-2 tracking-tight">Inject RAM</h3>
+                <p class="text-[#525252] text-sm text-center mb-6">Choose your dosage. Injection goes straight into your device.</p>
+
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <button onclick="startInjection('8 GB')" class="p-3 rounded-xl border-2 border-[rgba(0,0,0,0.06)] hover:border-[#64906E] transition-colors text-center group">
+                        <div class="font-bold group-hover:text-[#64906E] transition-colors">8 GB</div>
+                        <div class="text-xs text-[#525252]">Free</div>
+                    </button>
+                    <button onclick="startInjection('32 GB')" class="p-3 rounded-xl border-2 border-[#64906E]/30 bg-[#64906E]/5 text-center">
+                        <div class="font-bold text-[#64906E]">32 GB</div>
+                        <div class="text-xs text-[#64906E]">Regular</div>
+                    </button>
+                    <button onclick="startInjection('128 GB')" class="p-3 rounded-xl border-2 border-[rgba(0,0,0,0.06)] hover:border-purple-400 transition-colors text-center group">
+                        <div class="font-bold group-hover:text-purple-500 transition-colors">128 GB</div>
+                        <div class="text-xs text-[#525252]">Overdose</div>
+                    </button>
+                    <button onclick="startInjection('1 TB')" class="p-3 rounded-xl border-2 border-[rgba(0,0,0,0.06)] hover:border-yellow-400 transition-colors text-center group">
+                        <div class="font-bold group-hover:text-yellow-600 transition-colors">1 TB</div>
+                        <div class="text-xs text-yellow-600">Lethal ☠️</div>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 justify-center text-[10px] text-[#525252]">
+                    <i data-lucide="shield-check" class="w-3 h-3"></i>
+                    Secure injection — No needles used
+                </div>
+            </div>
+
+            <div id="modal-step-2" class="hidden">
+                <div class="text-center">
+                    <div class="float mb-4">
+                        <div class="w-16 h-16 rounded-2xl bg-[#64906E]/10 flex items-center justify-center mx-auto inject-pulse">
+                            <i data-lucide="syringe" class="w-8 h-8 text-[#64906E]"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 tracking-tight">Injecting...</h3>
+                    <p class="text-[#525252] text-sm mb-6" id="injection-size-text">Injecting 8 GB via digital osmosis...</p>
+
+                    <div class="w-full h-3 bg-[#F4F4F5] rounded-full overflow-hidden mb-3">
+                        <div id="modal-progress-bar" class="h-full bg-gradient-to-r from-[#64906E] to-[#4a6e50] rounded-full transition-all duration-[3000ms] ease-out" style="width: 0%"></div>
+                    </div>
+                    <span class="text-sm font-semibold text-[#64906E]" id="modal-progress-pct">0%</span>
+
+                    <div class="mt-4 text-xs text-[#525252] space-y-1" id="injection-log">
+                        <p class="text-[#64906E]">✓ Digital veins detected</p>
+                        <p class="text-[#64906E]">✓ Dosage prepared</p>
+                        <p id="inject-step-3" class="text-gray-300">○ Injecting...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="modal-step-3" class="hidden">
+                <div class="text-center">
+                    <div class="w-16 h-16 rounded-2xl bg-red-100 flex items-center justify-center mb-6 mx-auto">
+                        <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+                    </div>
+                    <h3 class="text-xl font-semibold mb-2 tracking-tight">Graft Rejected!</h3>
+                    <p class="text-[#525252] text-sm mb-4">Your device rejected the injected RAM. The digital immune system is too strong.</p>
+                    <div class="bg-red-50 border border-red-100 rounded-xl p-4 mb-6 text-left">
+                        <p class="text-xs text-red-700 font-mono">Error: RAM_REJECTION_SYNDROME<br>Cause: Physical RAM cannot be downloaded<br>Code: 0xYOU_CANT_DOWNLOAD_RAM<br>Fix: Go buy a real RAM stick</p>
+                    </div>
+                    <p class="text-sm text-[#525252] mb-6">Let's be honest: you can't inject RAM into a device. This was a joke from the start. But admit it — it was well done 😄</p>
+                    <button onclick="closeDownloadModal()" class="w-full py-3 rounded-xl bg-[#64906E] hover:bg-[#4a6e50] text-white font-semibold text-sm transition-all duration-300">
+                        I fell for it 👍
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 z-[200] hidden">
+        <div class="bg-[#0f172a] text-white px-6 py-4 rounded-2xl shadow-xl flex items-center gap-3 max-w-sm">
+            <i data-lucide="syringe" class="w-5 h-5 text-[#64906E] shrink-0"></i>
+            <span id="toast-text" class="text-sm"></span>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        function toggleFaq(button) {
+            const item = button.parentElement;
+            const content = item.querySelector('.faq-content');
+            const icon = button.querySelector('.faq-icon');
+            document.querySelectorAll('.faq-item').forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.querySelector('.faq-content').classList.add('hidden');
+                    otherItem.querySelector('.faq-icon').style.transform = 'rotate(0deg)';
+                }
+            });
+            content.classList.toggle('hidden');
+            icon.style.transform = content.classList.contains('hidden') ? 'rotate(0deg)' : 'rotate(180deg)';
+        }
+
+        function showDownloadModal() {
+            const modal = document.getElementById('download-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('modal-step-1').classList.remove('hidden');
+            document.getElementById('modal-step-2').classList.add('hidden');
+            document.getElementById('modal-step-3').classList.add('hidden');
+            lucide.createIcons();
+        }
+
+        function closeDownloadModal() {
+            const modal = document.getElementById('download-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        document.getElementById('download-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeDownloadModal();
+        });
+
+        function startInjection(size) {
+            document.getElementById('modal-step-1').classList.add('hidden');
+            document.getElementById('modal-step-2').classList.remove('hidden');
+            document.getElementById('injection-size-text').textContent = `Injecting ${size} via digital osmosis...`;
+            const progressBar = document.getElementById('modal-progress-bar');
+            const progressPct = document.getElementById('modal-progress-pct');
+            const step3 = document.getElementById('inject-step-3');
+            let progress = 0;
+            progressBar.style.width = '0%';
+            step3.className = 'text-gray-300';
+
+            const interval = setInterval(() => {
+                progress += Math.random() * 6 + 2;
+                if (progress >= 97) {
+                    progress = 97;
+                    clearInterval(interval);
+                    step3.className = 'text-[#64906E]';
+                    step3.textContent = '✓ Injecting...';
+                    setTimeout(() => {
+                        progressBar.style.width = '97%';
+                        progressPct.textContent = '97%';
+                        setTimeout(() => {
+                            document.getElementById('modal-step-2').classList.add('hidden');
+                            document.getElementById('modal-step-3').classList.remove('hidden');
+                            lucide.createIcons();
+                        }, 1000);
+                    }, 500);
+                }
+                progressBar.style.width = progress + '%';
+                progressPct.textContent = Math.round(progress) + '%';
+                if (progress > 50) {
+                    step3.className = 'text-[#64906E]';
+                    step3.textContent = '✓ Injecting...';
+                }
+            }, 250);
+            lucide.createIcons();
+        }
+
+        function selectPlan(plan) {
+            const messages = {
+                'Light': 'Light dosage selected! First injection free...',
+                'Regular': 'Regular dosage selected! Preparing 32 GB injection...',
+                'Overdose': 'Overdose selected! ⚠️ Your fans are gonna spin...',
+                'Lethal': 'Lethal dosage selected! ☠️ Last chance to turn back...'
+            };
+            showToast(messages[plan] || `${plan} dosage selected!`);
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            toastText.textContent = text;
+            toast.classList.remove('hidden');
+            lucide.createIcons();
+            setTimeout(() => { toast.classList.add('hidden'); }, 4000);
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
